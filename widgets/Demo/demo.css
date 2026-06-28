@@ -1,0 +1,103 @@
+/* DEMO / TEMPLATE WIDGET — styles loaded INTO this instance's Shadow Root, so
+   selectors are fully isolated: they can't leak out and can't be overridden from
+   the page. The aggressive `* { box-sizing }` reset below touches nothing outside
+   this widget — proof of the isolation boundary.
+
+   DYNAMIC SIZING: `.demo` is a size CONTAINER (container-type: size), so its
+   children size themselves against the WIDGET BOX with `cq*` units — drag the
+   widget bigger/smaller and the type, spacing and layout all adapt, never clipped.
+
+   Theme via var(--token, fallback): the host's design tokens inherit through the
+   shadow boundary, so the widget matches light/dark automatically; the fallback
+   keeps it readable outside this host. --demo-accent is set by demo.js. */
+
+* { box-sizing: border-box; }
+
+.demo {
+  container-type: size;                 /* children scale against this box */
+  --demo-accent: var(--accent, #818cf8);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 3cqh, 16px);
+  padding: clamp(12px, 4cqh, 20px);
+  font-family: var(--font, system-ui, sans-serif);
+  color: var(--text, #0f172a);
+  overflow: hidden;
+}
+
+.demo__head { display: flex; align-items: center; gap: 8px; flex: none; }
+.demo__dot {
+  width: clamp(8px, 2.6cqh, 11px); aspect-ratio: 1; border-radius: 50%;
+  background: var(--demo-accent);
+  box-shadow: 0 0 10px var(--demo-accent);
+  flex: none;
+}
+.demo__title {
+  margin: 0;
+  font-size: clamp(15px, 5cqh, 20px);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.demo__greeting {
+  margin: 0;
+  font-size: clamp(12px, 3.6cqh, 15px);
+  color: var(--text-muted, #64748b);
+}
+
+.demo__clock {
+  font-size: clamp(28px, 16cqh, 56px);
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--demo-accent);
+}
+
+.demo__tip {
+  margin-top: auto;                     /* settle the tip at the bottom */
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 2.4cqh, 12px);
+  align-items: flex-start;
+  background: var(--surface-2, rgba(127, 127, 127, 0.08));
+  border: 1px solid var(--border, rgba(127, 127, 127, 0.18));
+  border-radius: var(--radius-sm, 10px);
+  padding: clamp(10px, 3cqh, 14px);
+}
+.demo__tip-text {
+  margin: 0;
+  font-size: clamp(12px, 3.6cqh, 15px);
+  line-height: 1.4;
+  color: var(--text, #0f172a);
+}
+.demo__tip.is-flash { animation: demo-flash 0.6s ease; }
+@keyframes demo-flash {
+  from { border-color: var(--demo-accent); background: color-mix(in srgb, var(--demo-accent) 16%, transparent); }
+  to   { border-color: var(--border, rgba(127, 127, 127, 0.18)); }
+}
+
+.demo__btn {
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm, 10px);
+  padding: clamp(7px, 2.2cqh, 10px) 14px;
+  font: inherit;
+  font-size: clamp(12px, 3cqh, 13px);
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--on-accent, #fff);
+  background: var(--demo-accent);
+  transition: filter 0.15s ease, opacity 0.15s ease;
+}
+.demo__btn:hover { filter: brightness(1.08); }
+.demo__btn:disabled { opacity: 0.55; cursor: progress; }
+
+/* When the box gets short, hide the tip so the greeting + clock stay clean. */
+@container (max-height: 200px) {
+  .demo__tip { display: none; }
+}

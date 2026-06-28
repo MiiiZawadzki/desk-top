@@ -1,0 +1,10 @@
+# OS / editor cruft
+.DS_Store
+.idea/
+
+# runtime state — the DB (+ its WAL/SHM) and logs are generated, never committed
+/data/*
+!/data/.gitkeep
+
+# in case Composer is ever added for dev tooling
+vendor/
