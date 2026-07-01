@@ -32,6 +32,7 @@
   --red:     #f87171;
 
   --t-demo:    #818cf8;
+  --t-clock:   #38bdf8;
 
   --radius:    18px;
   --radius-sm: 11px;
@@ -73,6 +74,7 @@
   --red:     #dc2626;
 
   --t-demo:    #6366f1;
+  --t-clock:   #0ea5e9;
 
   --shadow-sm: 0 1px 2px rgba(2, 6, 23, .06);
   --shadow-md: 0 10px 30px rgba(2, 6, 23, .10);
@@ -205,6 +207,7 @@ body.edit-mode .topbar__edit { background: var(--accent); color: var(--on-accent
   transition: box-shadow .2s ease, border-color .2s ease, background .2s ease, transform .2s ease;
 }
 .widget[data-type="demo"]    { --w: var(--t-demo); }
+.widget[data-type="clock"]   { --w: var(--t-clock); }
 
 .widget:hover {
   border-color: var(--border-strong);
