@@ -1,0 +1,95 @@
+name: Build & GitOps Bump
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-desk-top
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: desk-top
+  KUSTOMIZE_IMAGE_NAME: ghcr.io/miiizawadzki/desk-top
+  GITOPS_REPO: git@github.com:MiiiZawadzki/desk-top-GitOps.git
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compute lowercase image reference
+        run: |
+          OWNER_LC="$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
+          echo "IMAGE=${REGISTRY}/${OWNER_LC}/${IMAGE_NAME}" >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Configure SSH for gitops repo
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GITOPS_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Install kustomize
+        run: |
+          curl -sSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.4.3/kustomize_v5.4.3_linux_amd64.tar.gz" \
+            | tar -xz -C /tmp
+          sudo mv /tmp/kustomize /usr/local/bin/kustomize
+          kustomize version
+
+      - name: Bump image tag in desk-top-GitOps
+        run: |
+          git clone "$GITOPS_REPO" gitops
+          cd gitops/k8s
+          kustomize edit set image "${KUSTOMIZE_IMAGE_NAME}=${IMAGE}:${{ github.sha }}"
+          git config user.email "ci@github-actions"
+          git config user.name  "GitHub Actions (desk-top)"
+          git add kustomization.yaml
+          if git diff --cached --quiet; then
+            echo "kustomization.yaml unchanged — nothing to commit"
+            exit 0
+          fi
+          git commit -m "deploy(desk-top): bump to ${GITHUB_SHA:0:7}"
+          # Retry-on-conflict in case another workflow pushes concurrently.
+          for i in 1 2 3 4 5; do
+            if git push origin main; then
+              echo "Pushed on attempt $i"
+              exit 0
+            fi
+            echo "Push rejected on attempt $i, rebasing and retrying…"
+            git pull --rebase origin main
+          done
+          echo "Failed to push after 5 attempts"
+          exit 1
