@@ -1,0 +1,15 @@
+{
+	auto_https off
+	frankenphp
+}
+
+:80 {
+	root * /app
+
+	# index.php is the ONLY entrypoint and all CSS/JS is inlined by the app, so nothing else will be served from disk.
+	rewrite * /index.php
+	php
+
+	encode gzip
+	log
+}

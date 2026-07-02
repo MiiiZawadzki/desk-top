@@ -1,0 +1,9 @@
+.git
+.github
+.idea
+.DS_Store
+data/*
+!data/.gitkeep
+deploy
+Dockerfile
+.dockerignore
