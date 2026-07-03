@@ -424,6 +424,6 @@ body.edit-mode .widget[data-enabled="0"] { display: block; opacity: .4; }
   .grid { grid-template-columns: 1fr; padding: 18px; gap: 14px; }
   .widget { grid-column: 1 / -1 !important; }
   .topbar__clock { display: none; }
-  body.edit-mode .widget__chrome,
-  body.edit-mode .widget__resize { display: none; }
+  body.edit-mode .widget__resize,
+  body.edit-mode .chrome__handle { display: none; }
 }
