@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Http;
 
 use App\Exception\HttpError;
+use App\Http\Controller\AuthController;
 use App\Http\Controller\DashboardController;
 use App\Http\Controller\InstanceController;
 use App\Http\Controller\LayoutController;
@@ -14,15 +15,28 @@ final class Router
     /** @var array<string, array<string, callable(Request): Response>> */
     private array $routes;
 
+    /**
+     * Routes reachable without a session. Everything else requires a logged-in user
+     *
+     * @var array<string, true>
+     */
+    private const array PUBLIC_PATHS = ['/login' => true];
+
     public function __construct(
         DashboardController $dashboard,
         WidgetController $widget,
         InstanceController $instances,
         LayoutController $layout,
+        AuthController $auth,
         private string $csrf,
     ) {
         $this->routes = [
             '/'              => ['GET' => fn (Request $r) => $dashboard->show()],
+            '/login'         => [
+                'GET'  => fn (Request $r) => $auth->showLogin(),
+                'POST' => $auth->login(...),
+            ],
+            '/logout'        => ['POST' => fn (Request $r) => $auth->logout()],
             '/api/widget'    => ['GET' => $widget->payload(...)],
             '/api/data'      => ['GET' => $widget->data(...)],
             '/api/asset'     => ['GET' => $widget->asset(...)],
@@ -54,6 +68,14 @@ final class Router
 
             if ($method !== 'GET' && !Csrf::check($request, $this->csrf)) {
                 return Response::json(['error' => 'bad csrf'], 403);
+            }
+
+            // Auth gate: everything outside PUBLIC_PATHS needs a session.
+            if (!isset(self::PUBLIC_PATHS[$request->path]) && empty($_SESSION['user_id'])) {
+                if ($method === 'GET' && !str_starts_with($request->path, '/api/')) {
+                    return Response::redirect('/login');
+                }
+                return Response::json(['error' => 'unauthorized'], 401);
             }
 
             return $handler($request);

@@ -8,6 +8,37 @@ use App\Domain\Instance;
 
 final class View
 {
+    public static function login(string $csrf): string
+    {
+        $root = dirname(__DIR__, 2);
+        $css = file_get_contents($root . '/public/dashboard.css');
+        $csrfAttr = htmlspecialchars($csrf, ENT_QUOTES);
+
+        $out = '<!doctype html><html lang="en"><head><meta charset="utf-8">';
+        $out .= '<meta name="viewport" content="width=device-width, initial-scale=1">';
+        $out .= '<meta name="csrf" content="' . $csrfAttr . '">';
+        $out .= '<script>(function(){try{var t=localStorage.getItem("theme");'
+            . 'if(!t)t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";'
+            . 'if(t==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>';
+        $out .= '<title>Sign in · Desk-Top</title><style>' . $css . '</style></head><body>';
+
+        $out .= '<main class="login">'
+            . '<form class="login__card" autocomplete="on">'
+            . '<div class="login__brand"><span class="topbar__name">Desk-Top</span></div>'
+            . '<label class="login__field"><span>Email</span>'
+            . '<input type="email" name="email" autocomplete="username" required autofocus></label>'
+            . '<label class="login__field"><span>Password</span>'
+            . '<input type="password" name="password" autocomplete="current-password" required></label>'
+            . '<p class="login__error" data-role="error" hidden></p>'
+            . '<button type="submit" class="login__submit">Sign in</button>'
+            . '</form></main>';
+
+        $out .= '<script>' . file_get_contents($root . '/public/login.js') . '</script>';
+        $out .= '</body></html>';
+
+        return $out;
+    }
+
     /** @param  Instance[]  $instances */
     public static function dashboard(array $instances, string $csrf): string
     {
@@ -39,6 +70,7 @@ final class View
         $out .= '<span class="topbar__clock" data-role="clock"></span>';
         $out .= '<button type="button" class="topbar__icon" data-action="toggle-theme" title="Toggle theme" aria-label="Toggle theme">☀</button>';
         $out .= '<button type="button" class="topbar__edit" data-action="toggle-edit">Edit</button>';
+        $out .= '<button type="button" class="topbar__icon" data-action="logout" title="Sign out" aria-label="Sign out">⎋</button>';
         $out .= '</div>';
 
         $out .= '<div class="grid">';

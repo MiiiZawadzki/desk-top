@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 require __DIR__ . '/autoload.php';
 
+use App\Auth\AuthService;
 use App\ErrorHandler;
+use App\Domain\User;
+use App\Http\Controller\AuthController;
 use App\Http\Controller\DashboardController;
 use App\Http\Controller\InstanceController;
 use App\Http\Controller\LayoutController;
@@ -15,6 +18,7 @@ use App\Log\FileLogger;
 use App\Renderer;
 use App\Seeder;
 use App\Store\SqliteRepository;
+use App\Store\SqliteUserRepository;
 use App\Widget\WidgetRegistry;
 
 // Ensure the writable data dir exists (a fresh clone tracks only data/.gitkeep,
@@ -27,7 +31,11 @@ if (!is_dir($dataDir)) {
 $logger = new FileLogger($dataDir . '/app.log');
 ErrorHandler::register($logger);
 
-$https = ($_SERVER['HTTPS'] ?? '') !== '' || ($_SERVER['SERVER_PORT'] ?? '') === '443';
+// TLS is terminated at the Traefik ingress, so the pod sees plain HTTP; trust
+// its X-Forwarded-Proto so the session cookie still gets the Secure flag in prod.
+$https = ($_SERVER['HTTPS'] ?? '') !== ''
+    || ($_SERVER['SERVER_PORT'] ?? '') === '443'
+    || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
@@ -45,8 +53,22 @@ if (empty($_SESSION['csrf'])) {
 $registry = new WidgetRegistry();
 $registry->discover(__DIR__ . '/widgets');
 
-$repo = new SqliteRepository($dataDir . '/dashboard.sqlite');
+$dbFile = $dataDir . '/dashboard.sqlite';
+$repo = new SqliteRepository($dbFile);
 (new Seeder($repo, $registry))->seedIfEmpty();
+
+$users = new SqliteUserRepository($dbFile);
+$auth = new AuthService($users);
+
+if ($users->count() === 0) {
+    $adminEmail = trim((string)($_SERVER['ADMIN_EMAIL'] ?? getenv('ADMIN_EMAIL') ?: ''));
+    $adminPassword = (string)($_SERVER['ADMIN_PASSWORD'] ?? getenv('ADMIN_PASSWORD') ?: '');
+
+    if ($adminEmail !== '' && $adminPassword !== '') {
+        $users->add(new User(null, $adminEmail, $auth->hash($adminPassword)));
+        $logger->info('Seeded initial admin user', ['email' => $adminEmail]);
+    }
+}
 
 $renderer = new Renderer($registry);
 $service = new InstanceService($repo, $registry, $logger);
@@ -58,5 +80,6 @@ return new Router(
     new WidgetController($repo, $registry, $renderer),
     new InstanceController($repo, $service),
     new LayoutController($service),
+    new AuthController($auth, $csrf),
     $csrf,
 );

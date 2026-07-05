@@ -55,11 +55,20 @@
         setInterval(tick, 15000);
     }
 
+    async function logout() {
+        try {
+            await window.__admin.api('POST', '/logout');
+        } catch (e) {
+        }
+        window.location.assign('/login');
+    }
+
     document.addEventListener('click', (e) => {
         const act = e.target.closest('[data-action]');
         if (!act) return;
         if (act.dataset.action === 'toggle-edit') return toggleEdit();
         if (act.dataset.action === 'toggle-theme') return toggleTheme();
+        if (act.dataset.action === 'logout') return logout();
     });
 
     updateThemeIcon();
