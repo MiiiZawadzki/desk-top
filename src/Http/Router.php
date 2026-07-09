@@ -8,6 +8,7 @@ use App\Http\Controller\AuthController;
 use App\Http\Controller\DashboardController;
 use App\Http\Controller\InstanceController;
 use App\Http\Controller\LayoutController;
+use App\Http\Controller\WidgetActionController;
 use App\Http\Controller\WidgetController;
 
 final class Router
@@ -25,6 +26,7 @@ final class Router
     public function __construct(
         DashboardController $dashboard,
         WidgetController $widget,
+        WidgetActionController $widgetAction,
         InstanceController $instances,
         LayoutController $layout,
         AuthController $auth,
@@ -41,6 +43,13 @@ final class Router
             '/api/data'      => ['GET' => $widget->data(...)],
             '/api/asset'     => ['GET' => $widget->asset(...)],
             '/api/types'     => ['GET' => fn (Request $r) => $widget->types()],
+            // generic dispatcher for widget-owned APIs
+            '/api/widget/action' => [
+                'GET'    => $widgetAction->handle(...),
+                'POST'   => $widgetAction->handle(...),
+                'PATCH'  => $widgetAction->handle(...),
+                'DELETE' => $widgetAction->handle(...),
+            ],
             '/api/instances' => [
                 'GET'    => fn (Request $r) => $instances->index(),
                 'POST'   => $instances->create(...),

@@ -36,6 +36,11 @@ final class Request
         return isset($this->query[$key]) ? (string)$this->query[$key] : $default;
     }
 
+    public function queryAll(): array
+    {
+        return $this->query;
+    }
+
     public function header(string $name): string
     {
         return $this->headers[strtolower($name)] ?? '';

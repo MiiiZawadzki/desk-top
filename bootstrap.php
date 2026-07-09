@@ -11,6 +11,7 @@ use App\Http\Controller\AuthController;
 use App\Http\Controller\DashboardController;
 use App\Http\Controller\InstanceController;
 use App\Http\Controller\LayoutController;
+use App\Http\Controller\WidgetActionController;
 use App\Http\Controller\WidgetController;
 use App\Http\Router;
 use App\InstanceService;
@@ -78,6 +79,7 @@ $csrf = $_SESSION['csrf'];
 return new Router(
     new DashboardController($repo, $csrf),
     new WidgetController($repo, $registry, $renderer),
+    new WidgetActionController($repo, $registry, $dataDir),
     new InstanceController($repo, $service),
     new LayoutController($service),
     new AuthController($auth, $csrf),
