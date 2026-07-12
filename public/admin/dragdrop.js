@@ -50,6 +50,7 @@
             }
             widget.style.gridColumn = next.x + ' / span ' + next.w;
             widget.style.gridRow = next.y + ' / span ' + next.h;
+            widget.style.setProperty('--h', next.h);
         }
 
         async function up() {

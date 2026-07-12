@@ -37,7 +37,7 @@
   padding: 9px 13px;
   color: var(--text, #0f172a);
   background: var(--input-bg, var(--surface-2, rgba(127, 127, 127, 0.07)));
-  border: 1px solid var(--border, rgba(127, 127, 127, 0.16));
+  border: 2px solid var(--border, rgba(127, 127, 127, 0.16));
   border-radius: var(--radius-sm, 10px);
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -54,7 +54,7 @@
   position: relative;
   cursor: pointer;
   background: var(--todo-accent);
-  border: 1px solid transparent;
+  border: 2px solid var(--border, #0a0a0a);
   border-radius: var(--radius-sm, 10px);
   transition: filter 0.15s ease;
 }
@@ -112,7 +112,7 @@
   cursor: pointer;
   padding: 0;
   border: 2px solid var(--border-strong, var(--border, rgba(127, 127, 127, 0.4)));
-  border-radius: 50%;
+  border-radius: 0;
   background: transparent;
   position: relative;
   transition: border-color 0.15s ease, background 0.15s ease;
@@ -153,13 +153,13 @@
 .todo__item.is-done .todo__check::after {
   content: '';
   position: absolute;
-  left: 6px;
-  top: 2px;
+  left: 50%;
+  top: 46%;
   width: 5px;
   height: 10px;
-  border: solid #fff;
+  border: solid var(--on-accent, #fff);
   border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 .todo__item.is-done .todo__text {
   text-decoration: line-through;

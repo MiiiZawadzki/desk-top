@@ -80,7 +80,7 @@ final class View
             $layout = $inst->layout;
             $id = htmlspecialchars((string)$inst->id, ENT_QUOTES);
             $title = htmlspecialchars($inst->title, ENT_QUOTES);
-            $style = "grid-column: {$layout->x} / span {$layout->w}; grid-row: {$layout->y} / span {$layout->h};";
+            $style = "grid-column: {$layout->x} / span {$layout->w}; grid-row: {$layout->y} / span {$layout->h}; --h: {$layout->h};";
 
             $out .= '<div class="widget" data-enabled="' . ($inst->enabled ? '1' : '0') . '"'
                 . ' data-id="' . $id . '" data-type="' . htmlspecialchars($type, ENT_QUOTES) . '"'

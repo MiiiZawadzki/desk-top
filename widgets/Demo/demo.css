@@ -1,20 +1,7 @@
-/* DEMO / TEMPLATE WIDGET — styles loaded INTO this instance's Shadow Root, so
-   selectors are fully isolated: they can't leak out and can't be overridden from
-   the page. The aggressive `* { box-sizing }` reset below touches nothing outside
-   this widget — proof of the isolation boundary.
-
-   DYNAMIC SIZING: `.demo` is a size CONTAINER (container-type: size), so its
-   children size themselves against the WIDGET BOX with `cq*` units — drag the
-   widget bigger/smaller and the type, spacing and layout all adapt, never clipped.
-
-   Theme via var(--token, fallback): the host's design tokens inherit through the
-   shadow boundary, so the widget matches light/dark automatically; the fallback
-   keeps it readable outside this host. --demo-accent is set by demo.js. */
-
 * { box-sizing: border-box; }
 
 .demo {
-  container-type: size;                 /* children scale against this box */
+  container-type: size;
   --demo-accent: var(--accent, #818cf8);
   height: 100%;
   display: flex;
@@ -28,9 +15,9 @@
 
 .demo__head { display: flex; align-items: center; gap: 8px; flex: none; }
 .demo__dot {
-  width: clamp(8px, 2.6cqh, 11px); aspect-ratio: 1; border-radius: 50%;
+  width: clamp(8px, 2.6cqh, 11px); aspect-ratio: 1; border-radius: 0;
   background: var(--demo-accent);
-  box-shadow: 0 0 10px var(--demo-accent);
+  border: 2px solid var(--border, #0a0a0a);
   flex: none;
 }
 .demo__title {
@@ -59,7 +46,7 @@
 }
 
 .demo__tip {
-  margin-top: auto;                     /* settle the tip at the bottom */
+  margin-top: auto;
   display: flex;
   flex-direction: column;
   gap: clamp(8px, 2.4cqh, 12px);
@@ -97,7 +84,6 @@
 .demo__btn:hover { filter: brightness(1.08); }
 .demo__btn:disabled { opacity: 0.55; cursor: progress; }
 
-/* When the box gets short, hide the tip so the greeting + clock stay clean. */
 @container (max-height: 200px) {
   .demo__tip { display: none; }
 }
