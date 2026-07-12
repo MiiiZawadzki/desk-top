@@ -148,10 +148,12 @@
                 plot.className = 'wx__plot';
                 const rowTime = mkRow('wx__crow--time');
 
+                const nowHour = rainNow ? String(rainNow).slice(0, 13) : null;
                 hours.forEach((h, i) => {
                     const hh = String(h.time).slice(11, 13);
-                    const past = rainNow ? (h.time < rainNow) : false;
-                    const isNow = h.time === rainNow;
+                    const hHour = String(h.time).slice(0, 13);
+                    const isNow = nowHour ? hHour === nowHour : false;
+                    const past = nowHour ? (hHour < nowHour) : false;
                     const prob = h.prob == null ? 0 : h.prob;
                     const showLabel = i % 3 === 0;
 

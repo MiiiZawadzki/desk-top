@@ -127,6 +127,7 @@
             </div>`);
         widget.style.gridColumn = l.x + ' / span ' + l.w;
         widget.style.gridRow = l.y + ' / span ' + l.h;
+        widget.style.setProperty('--h', l.h);
         A.grid.appendChild(widget);
         buildChrome(widget);
         window.Dashboard.mount(hostOf(widget));
