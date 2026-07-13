@@ -126,6 +126,8 @@
                 if (clearBtn) clearBtn.removeEventListener('click', onClear);
             };
 
+            root.__refresh = () => call('list', 'GET');
+
             call('list', 'GET');
         },
 
@@ -134,6 +136,7 @@
                 root.__cleanup();
                 root.__cleanup = null;
             }
+            root.__refresh = null;
         },
     };
 })();
