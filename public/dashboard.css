@@ -119,6 +119,8 @@ body {
   transition: transform .06s ease, box-shadow .06s ease, background .12s ease;
 }
 .topbar__icon:hover { background: var(--c-cyan); color: #0a0a0a; }
+.topbar__icon.is-spinning { animation: topbar-spin .6s ease; }
+@keyframes topbar-spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
 .topbar__edit, .topbar__add {
   display: inline-flex;
   align-items: center;

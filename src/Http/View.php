@@ -68,6 +68,7 @@ final class View
         $out .= '<div class="topbar">';
         $out .= '<span class="topbar__brand"><span class="topbar__name">Desk-Top</span></span>';
         $out .= '<span class="topbar__clock" data-role="clock"></span>';
+        $out .= '<button type="button" class="topbar__icon" data-action="refresh" title="Refresh data" aria-label="Refresh data">⟳</button>';
         $out .= '<button type="button" class="topbar__icon" data-action="toggle-theme" title="Toggle theme" aria-label="Toggle theme">☀</button>';
         $out .= '<button type="button" class="topbar__edit" data-action="toggle-edit">Edit</button>';
         $out .= '<button type="button" class="topbar__icon" data-action="logout" title="Sign out" aria-label="Sign out">⎋</button>';

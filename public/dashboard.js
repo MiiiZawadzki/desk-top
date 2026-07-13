@@ -81,7 +81,20 @@
         document.querySelectorAll('.widget__host[data-widget]').forEach(mount);
     }
 
-    window.Dashboard = {mount, mountAll, unmount};
+    // Force every mounted widget that supports it to re-fetch its data
+    function refreshAll() {
+        document.querySelectorAll('.widget__host[data-widget]').forEach((host) => {
+            const fn = host.__root && host.__root.__refresh;
+            if (typeof fn === 'function') {
+                try {
+                    fn();
+                } catch (e) {
+                }
+            }
+        });
+    }
+
+    window.Dashboard = {mount, mountAll, unmount, refreshAll};
 
     mountAll();
 })();

@@ -228,8 +228,10 @@
                 return col;
             }
 
+            let lastRefresh = Date.now();
             async function refresh() {
                 if (!instance) return;
+                lastRefresh = Date.now();
                 try {
                     const res = await fetch('/api/data?instance=' + encodeURIComponent(instance));
                     if (res.ok) {
@@ -240,6 +242,15 @@
                 }
             }
 
+            const onWake = () => {
+                if (document.visibilityState === 'hidden') return;
+                if (Date.now() - lastRefresh > 60 * 1000) refresh();
+            };
+            document.addEventListener('visibilitychange', onWake);
+            window.addEventListener('focus', onWake);
+            root.__onWake = onWake;
+            root.__refresh = refresh;
+
             render(data || {});
             root.__timer = setInterval(refresh, REFRESH_MS);
         },
@@ -249,6 +260,12 @@
                 clearInterval(root.__timer);
                 root.__timer = null;
             }
+            if (root.__onWake) {
+                document.removeEventListener('visibilitychange', root.__onWake);
+                window.removeEventListener('focus', root.__onWake);
+                root.__onWake = null;
+            }
+            root.__refresh = null;
         },
     };
 })();

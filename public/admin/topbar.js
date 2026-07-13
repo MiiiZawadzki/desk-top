@@ -55,6 +55,19 @@
         setInterval(tick, 15000);
     }
 
+    function refreshView(btn) {
+        if (window.Dashboard && typeof window.Dashboard.refreshAll === 'function') {
+            window.Dashboard.refreshAll();
+        }
+        if (btn) {
+            btn.classList.remove('is-spinning');
+            // reflow so the animation restarts on repeated clicks
+            void btn.offsetWidth;
+            btn.classList.add('is-spinning');
+            setTimeout(() => btn.classList.remove('is-spinning'), 600);
+        }
+    }
+
     async function logout() {
         try {
             await window.__admin.api('POST', '/logout');
@@ -68,6 +81,7 @@
         if (!act) return;
         if (act.dataset.action === 'toggle-edit') return toggleEdit();
         if (act.dataset.action === 'toggle-theme') return toggleTheme();
+        if (act.dataset.action === 'refresh') return refreshView(act);
         if (act.dataset.action === 'logout') return logout();
     });
 
