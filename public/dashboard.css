@@ -64,11 +64,7 @@ body {
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  background:
-    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 100% 26px,
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 26px 100%,
-    var(--canvas);
-  background-attachment: fixed;
+  background: var(--canvas);
 }
 
 .topbar {
@@ -152,10 +148,26 @@ body.edit-mode .topbar__edit { background: var(--c-pink); color: #0a0a0a; }
 .grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-auto-rows: 80px;
-  gap: 22px;
+  grid-auto-rows: 80px;      /* 4 vertical squares of 20px */
+  row-gap: 20px;             /* exactly one vertical square */
+  /* Fluid column gap = one horizontal square. With 12 columns and 6 squares
+     per column-module (5 for the widget + 1 for the gap), the divisor is
+     12*6 - 1 = 71, so gap = content-width / 71 and each column stride is 6
+     squares. Every widget edge then lands on a line with a 1-square margin. */
+  column-gap: calc(100% / 71);
   /* Fill the whole viewport width; the padding is the small edge margin. */
   padding: 24px;
+  /* Extend below the widgets so the guide grid fills the screen. */
+  min-height: calc(100dvh - 72px);
+  /* Graph-paper guides: horizontal square = content-width / 71 (one column
+     gap), vertical square = 20px (one row gap). Clipped to the content box so
+     widget edges — not just the top-left corner — sit on the lines. */
+  background-image:
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(var(--grid-line) 1px, transparent 1px);
+  background-size: calc(100% / 71) 20px;
+  background-origin: content-box;
+  background-clip: content-box;
 }
 
 .widget {
@@ -379,7 +391,7 @@ body.edit-mode .widget[data-enabled="0"] { display: block; opacity: .45; }
 @keyframes toast-in { from { opacity: 0; transform: translate(-6px, -6px); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 640px) {
-  .grid { grid-template-columns: 1fr; padding: 18px; gap: 16px; }
+  .grid { grid-template-columns: 1fr; padding: 18px; row-gap: 20px; }
   .widget { grid-column: 1 / -1 !important; grid-row: span var(--h, 3) !important; }
   .topbar__clock { display: none; }
   body.edit-mode .widget__resize,
