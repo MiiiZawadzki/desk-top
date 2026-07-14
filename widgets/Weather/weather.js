@@ -149,6 +149,8 @@
                 const rowTime = mkRow('wx__crow--time');
 
                 const nowHour = rainNow ? String(rainNow).slice(0, 13) : null;
+                const nowMin = rainNow ? Number(String(rainNow).slice(14, 16)) : 0;
+                const nowFrac = isFinite(nowMin) ? Math.min(1, Math.max(0, nowMin / 60)) : 0;
                 hours.forEach((h, i) => {
                     const hh = String(h.time).slice(11, 13);
                     const hHour = String(h.time).slice(0, 13);
@@ -157,10 +159,10 @@
                     const prob = h.prob == null ? 0 : h.prob;
                     const showLabel = i % 3 === 0;
 
-                    const pc = mkCell(rowPct, isNow);
+                    const pc = mkCell(rowPct, isNow, nowFrac);
                     if (showLabel) pc.textContent = prob + '%';
 
-                    const col = mkCell(plot, isNow);
+                    const col = mkCell(plot, isNow, nowFrac);
                     if (past) col.classList.add('is-past');
                     const bar = document.createElement('div');
                     bar.className = 'wx__bar';
@@ -170,7 +172,7 @@
                     col.title = hh + ':00 · ' + prob + '% chance' +
                         (h.mm != null && h.mm > 0 ? ' · ' + h.mm + ' ' + rainUnit : '');
 
-                    const tc = mkCell(rowTime, isNow);
+                    const tc = mkCell(rowTime, isNow, nowFrac);
                     if (showLabel) tc.textContent = hh + ':00';
                 });
 
@@ -183,10 +185,13 @@
                 r.className = 'wx__crow ' + mod;
                 return r;
             }
-            function mkCell(row, isNow) {
+            function mkCell(row, isNow, nowFrac) {
                 const c = document.createElement('div');
                 c.className = 'wx__cell';
-                if (isNow) c.classList.add('is-now');
+                if (isNow) {
+                    c.classList.add('is-now');
+                    c.style.setProperty('--now-frac', nowFrac == null ? 0 : nowFrac);
+                }
                 row.appendChild(c);
                 return c;
             }
