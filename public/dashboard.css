@@ -32,6 +32,7 @@
   --c-pink:   #ff5fa2;
   --c-cyan:   #38e1ff;
   --c-lime:   #b8ff3d;
+  --c-orange: #ff8a3d;
 
   --w: var(--c-yellow);
 
@@ -184,6 +185,7 @@ body.edit-mode .topbar__edit { background: var(--c-pink); color: #0a0a0a; }
 .widget[data-type="clock"]    { --w: var(--c-pink); }
 .widget[data-type="todolist"] { --w: var(--c-lime); }
 .widget[data-type="weather"]  { --w: var(--c-cyan); }
+.widget[data-type="coinflip"] { --w: var(--c-orange); }
 
 
 .widget__host { height: 100%; --w: #0a0a0a; }
