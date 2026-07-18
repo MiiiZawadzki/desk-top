@@ -1,57 +1,98 @@
 * { box-sizing: border-box; }
 
 .clock {
+  --clk-ink: #0a0a0a;
   container-type: size;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: clamp(2px, 1.5cqh, 8px);
-  padding: clamp(10px, 4cqh, 22px);
+  gap: clamp(5px, 2.2cqh, 12px);
+  padding: clamp(12px, 4cqh, 20px);
   font-family: var(--font, system-ui, sans-serif);
+  color: var(--clk-ink);
   text-align: center;
   overflow: hidden;
 }
 
 .clock__label {
-  font-size: clamp(10px, 4cqh, 13px);
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  flex: none;
+  max-width: 100%;
+  padding: 4px 11px;
+  font-size: clamp(10px, 3.6cqh, 13px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--text-muted, #64748b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+  background: var(--clk-ink);
+  text-box: trim-both cap alphabetic;
 }
 
 .clock__time {
-  font-size: clamp(30px, 30cqh, 72px);
-  font-weight: 650;
+  flex: none;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: clamp(28px, 26cqh, 76px);
+  font-weight: 800;
   line-height: 1;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
-  color: var(--w, var(--accent, #818cf8));
+  color: var(--clk-ink);
 }
 
 .clock__date {
-  font-size: clamp(11px, 6cqh, 16px);
-  color: var(--text, #0f172a);
+  flex: none;
+  font-size: clamp(11px, 5cqh, 15px);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--clk-ink);
 }
 
 .clock__utc {
+  flex: none;
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   gap: 6px;
-  margin-top: clamp(2px, 1.5cqh, 7px);
-  font-size: clamp(10px, 5cqh, 13px);
-  color: var(--text-muted, #64748b);
-  font-variant-numeric: tabular-nums;
-}
-.clock__utc-tag {
-  font-size: 0.78em;
+  padding: 3px 9px;
+  border: 2px solid var(--clk-ink);
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: clamp(9px, 4cqh, 12px);
   font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--w, var(--accent, #818cf8));
+  font-variant-numeric: tabular-nums;
+  color: var(--clk-ink);
 }
+.clock__utc-tag { font-weight: 900; letter-spacing: 0.1em; }
+
+.clock__analog {
+  flex: 0 1 auto;
+  min-height: 0;
+  width: clamp(80px, 62cqmin, 260px);
+  height: clamp(80px, 62cqmin, 260px);
+  max-width: 100%;
+  display: block;
+}
+.clock--both .clock__analog {
+  width: clamp(64px, 44cqmin, 180px);
+  height: clamp(64px, 44cqmin, 180px);
+}
+.clock--both .clock__time { font-size: clamp(18px, 12cqh, 40px); }
+
+.clock__dial { fill: #fff; stroke: var(--clk-ink); stroke-width: 3; }
+.clock__tick { stroke: var(--clk-ink); stroke-width: 1.6; }
+.clock__tick--major { stroke-width: 3.4; }
+.clock__hand { stroke: var(--clk-ink); }
+.clock__hand--hour { stroke-width: 4.6; }
+.clock__hand--min  { stroke-width: 3; }
+.clock__hand--sec  { stroke: var(--red, #ff4d3d); stroke-width: 1.6; }
+.clock__hub { fill: var(--clk-ink); }
 
 @container (max-height: 120px) {
-  .clock__label { display: none; }
+  .clock__label,
+  .clock__date,
+  .clock__utc { display: none; }
 }
