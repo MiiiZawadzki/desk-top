@@ -80,6 +80,34 @@ body {
   border-bottom: var(--bd) solid var(--ink);
 }
 .topbar__brand { flex: 1; display: flex; align-items: center; gap: 10px; }
+.topbar__actions { display: flex; align-items: center; gap: 12px; }
+
+.topbar__burger {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  cursor: pointer;
+  background: var(--panel);
+  border: var(--bd) solid var(--ink);
+  box-shadow: var(--sh-sm);
+  transition: transform .06s ease, box-shadow .06s ease;
+}
+.topbar__burger span {
+  display: block;
+  width: 18px;
+  height: 2.5px;
+  background: var(--ink);
+  transition: transform .15s ease, opacity .15s ease;
+}
+.topbar__burger:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--shadow-col); }
+.topbar.is-menu-open .topbar__burger span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.topbar.is-menu-open .topbar__burger span:nth-child(2) { opacity: 0; }
+.topbar.is-menu-open .topbar__burger span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 .topbar__name {
   display: inline-block;
   padding: 5px 12px;
@@ -91,14 +119,6 @@ body {
   background: var(--c-yellow);
   border: var(--bd) solid #0a0a0a;
   box-shadow: var(--sh-sm);
-}
-.topbar__clock {
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink);
-  letter-spacing: .02em;
 }
 .topbar__icon {
   display: inline-flex;
@@ -115,9 +135,15 @@ body {
   box-shadow: var(--sh-sm);
   transition: transform .06s ease, box-shadow .06s ease, background .12s ease;
 }
-.topbar__icon:hover { background: var(--c-cyan); color: #0a0a0a; }
-.topbar__icon.is-spinning { animation: topbar-spin .6s ease; }
+@media (hover: hover) {
+  .topbar__icon:hover { background: var(--c-cyan); color: #0a0a0a; }
+}
+.topbar__icon.is-spinning .topbar__ico { animation: topbar-spin .6s ease; }
 @keyframes topbar-spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+
+.topbar__ico { display: inline-flex; align-items: center; justify-content: center; }
+.topbar__icon .topbar__txt { display: none; }
+.topbar__edit .topbar__ico { display: none; }
 .topbar__edit, .topbar__add {
   display: inline-flex;
   align-items: center;
@@ -137,7 +163,9 @@ body {
   cursor: pointer;
   transition: transform .06s ease, box-shadow .06s ease, background .12s ease, color .12s ease;
 }
-.topbar__edit:hover, .topbar__add:hover { background: var(--c-lime); color: #0a0a0a; }
+@media (hover: hover) {
+  .topbar__edit:hover, .topbar__add:hover { background: var(--c-lime); color: #0a0a0a; }
+}
 body.edit-mode .topbar__edit { background: var(--c-pink); color: #0a0a0a; }
 .topbar__add { background: var(--c-lime); color: #0a0a0a; }
 
@@ -395,7 +423,58 @@ body.edit-mode .widget[data-enabled="0"] { display: block; opacity: .45; }
 @media (max-width: 640px) {
   .grid { grid-template-columns: 1fr; padding: 18px; row-gap: 20px; }
   .widget { grid-column: 1 / -1 !important; grid-row: span var(--h, 3) !important; }
-  .topbar__clock { display: none; }
+
+  .topbar { padding: 10px 12px; }
+  .topbar__brand { min-width: 0; }
+  .topbar__name {
+    font-size: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .topbar__burger { display: inline-flex; }
+
+  .topbar__actions {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 12px;
+    background: var(--panel);
+    border-bottom: var(--bd) solid var(--ink);
+    box-shadow: var(--sh);
+    z-index: 60;
+  }
+  .topbar.is-menu-open .topbar__actions { display: flex; }
+
+  .topbar__actions .topbar__icon,
+  .topbar__actions .topbar__edit,
+  .topbar__actions .topbar__add {
+    width: 100%;
+    height: 48px;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 0 14px;
+    box-shadow: none;
+  }
+  .topbar__actions .topbar__ico {
+    display: inline-flex;
+    width: 20px;
+    font-size: 17px;
+    flex: none;
+  }
+  .topbar__actions .topbar__txt {
+    display: inline;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+  }
+
   body.edit-mode .widget__resize,
   body.edit-mode .chrome__handle { display: none; }
 }

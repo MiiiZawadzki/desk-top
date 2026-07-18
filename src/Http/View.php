@@ -67,11 +67,13 @@ final class View
 
         $out .= '<div class="topbar">';
         $out .= '<span class="topbar__brand"><span class="topbar__name">Desk-Top</span></span>';
-        $out .= '<span class="topbar__clock" data-role="clock"></span>';
-        $out .= '<button type="button" class="topbar__icon" data-action="refresh" title="Refresh data" aria-label="Refresh data">⟳</button>';
-        $out .= '<button type="button" class="topbar__icon" data-action="toggle-theme" title="Toggle theme" aria-label="Toggle theme">☀</button>';
-        $out .= '<button type="button" class="topbar__edit" data-action="toggle-edit">Edit</button>';
-        $out .= '<button type="button" class="topbar__icon" data-action="logout" title="Sign out" aria-label="Sign out">⎋</button>';
+        $out .= '<button type="button" class="topbar__burger" data-action="menu" aria-label="Menu" aria-expanded="false" aria-controls="topbar-actions"><span></span><span></span><span></span></button>';
+        $out .= '<div class="topbar__actions" id="topbar-actions">';
+        $out .= '<button type="button" class="topbar__icon" data-action="refresh" title="Refresh data" aria-label="Refresh data"><span class="topbar__ico" aria-hidden="true">⟳</span><span class="topbar__txt">Refresh</span></button>';
+        $out .= '<button type="button" class="topbar__icon" data-action="toggle-theme" title="Toggle theme" aria-label="Toggle theme"><span class="topbar__ico" aria-hidden="true">☀</span><span class="topbar__txt">Theme</span></button>';
+        $out .= '<button type="button" class="topbar__edit" data-action="toggle-edit"><span class="topbar__ico" aria-hidden="true">✎</span><span class="topbar__txt" data-role="edit-label">Edit</span></button>';
+        $out .= '<button type="button" class="topbar__icon" data-action="logout" title="Sign out" aria-label="Sign out"><span class="topbar__ico" aria-hidden="true">⎋</span><span class="topbar__txt">Sign out</span></button>';
+        $out .= '</div>';
         $out .= '</div>';
 
         $out .= '<div class="grid">';

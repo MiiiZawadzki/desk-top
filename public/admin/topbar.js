@@ -3,21 +3,23 @@
 
     function toggleEdit() {
         const on = document.body.classList.toggle('edit-mode');
-        const btn = document.querySelector('[data-action="toggle-edit"]');
-        if (btn) btn.textContent = on ? 'Done' : 'Edit';
+        const lbl = document.querySelector('[data-role="edit-label"]');
+        if (lbl) lbl.textContent = on ? 'Done' : 'Edit';
         ensureAddButton(on);
     }
 
     function ensureAddButton(on) {
-        let btn = document.querySelector('.topbar__add');
+        const btn = document.querySelector('.topbar__add');
         if (on && !btn) {
-            btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'topbar__add';
-            btn.dataset.action = 'add';
-            btn.textContent = '+ Widget';
+            const add = document.createElement('button');
+            add.type = 'button';
+            add.className = 'topbar__add';
+            add.dataset.action = 'add';
+            add.innerHTML = '<span class="topbar__ico" aria-hidden="true">+</span><span class="topbar__txt">Widget</span>';
             const editBtn = document.querySelector('[data-action="toggle-edit"]');
-            editBtn.parentNode.insertBefore(btn, editBtn);
+            editBtn.parentNode.insertBefore(add, editBtn);
+        } else if (!on && btn) {
+            btn.remove();
         }
     }
 
@@ -37,22 +39,9 @@
     function updateThemeIcon() {
         const btn = document.querySelector('[data-action="toggle-theme"]');
         if (!btn) return;
-
-        btn.textContent = isLight() ? '☾' : '☀';
+        const ico = btn.querySelector('.topbar__ico');
+        if (ico) ico.textContent = isLight() ? '☾' : '☀';
         btn.title = isLight() ? 'Dark mode' : 'Light mode';
-    }
-
-    function startClock() {
-        const el = document.querySelector('[data-role="clock"]');
-        if (!el) return;
-        const dateFmt = new Intl.DateTimeFormat('en-GB', {weekday: 'long', day: 'numeric', month: 'long'});
-        const timeFmt = new Intl.DateTimeFormat('en-GB', {hour: '2-digit', minute: '2-digit'});
-        const tick = () => {
-            const d = new Date();
-            el.textContent = dateFmt.format(d) + ' · ' + timeFmt.format(d);
-        };
-        tick();
-        setInterval(tick, 15000);
     }
 
     function refreshView(btn) {
@@ -76,15 +65,37 @@
         window.location.assign('/login');
     }
 
+    function setMenu(open) {
+        const bar = document.querySelector('.topbar');
+        if (bar) bar.classList.toggle('is-menu-open', open);
+        const btn = document.querySelector('[data-action="menu"]');
+        if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    function toggleMenu() {
+        const bar = document.querySelector('.topbar');
+        setMenu(bar ? !bar.classList.contains('is-menu-open') : true);
+    }
+    const closeMenu = () => setMenu(false);
+
     document.addEventListener('click', (e) => {
         const act = e.target.closest('[data-action]');
-        if (!act) return;
-        if (act.dataset.action === 'toggle-edit') return toggleEdit();
-        if (act.dataset.action === 'toggle-theme') return toggleTheme();
-        if (act.dataset.action === 'refresh') return refreshView(act);
-        if (act.dataset.action === 'logout') return logout();
+        if (!act) {
+            if (!e.target.closest('.topbar')) closeMenu();
+            return;
+        }
+        switch (act.dataset.action) {
+            case 'menu': return toggleMenu();
+            case 'toggle-edit': return toggleEdit();
+            case 'toggle-theme': return toggleTheme();
+            case 'refresh': return refreshView(act);
+            case 'add': return closeMenu();
+            case 'logout': return logout();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeMenu();
     });
 
     updateThemeIcon();
-    startClock();
 })();
